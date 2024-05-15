@@ -1,5 +1,3 @@
-// controllers/BasketController.js
-
 const { BasketProducts, Products, Basket } = require("../models/models")
 
 class BasketController {
@@ -15,7 +13,7 @@ class BasketController {
             });
     
             if (existingProduct) {
-                existingProduct.Quantity += 1;
+                existingProduct.quantity += 1;
                 await existingProduct.save();
                 return res.json(existingProduct);
             } else {
@@ -38,12 +36,12 @@ class BasketController {
                 },
                 where: { basketId: id }
             });
-            const basketWithQuantity = basket.map(item => ({
+            const basketWithquantity = basket.map(item => ({
                 ...item.toJSON(),
-                quantity: item.Quantity
+                quantity: item.quantity
             }));
     
-            return res.json(basketWithQuantity);
+            return res.json(basketWithquantity);
         } catch (error) {
             next(error);
         }
@@ -72,7 +70,7 @@ class BasketController {
                 return res.status(404).json({ message: "Товар не найден в корзине" });
             }
 
-            basketProduct.Quantity += 1;
+            basketProduct.quantity += 1;
             await basketProduct.save();
 
             return res.json(basketProduct);
@@ -91,8 +89,8 @@ class BasketController {
                 return res.status(404).json({ message: "Товар не найден в корзине" });
             }
 
-            if (basketProduct.Quantity > 1) {
-                basketProduct.Quantity -= 1;
+            if (basketProduct.quantity > 1) {
+                basketProduct.quantity -= 1;
                 await basketProduct.save();
             } else {
                 await basketProduct.destroy();

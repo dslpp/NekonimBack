@@ -14,7 +14,7 @@ const Basket = sequelize.define('basket', {
 
 const BasketProducts = sequelize.define('basketproducts', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  Quantity: { type: DataTypes.INTEGER }, 
+  quantity: { type: DataTypes.INTEGER }, 
 });
 
 const Products = sequelize.define('products', {
@@ -40,6 +40,20 @@ const ProductsInfo = sequelize.define('products_info', {
   description: { type: DataTypes.STRING, allowNull: false },
 });
 
+const Order = sequelize.define('order', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор пользователя, сделавшего заказ
+  status: { type: DataTypes.STRING, allowNull: false }, // Статус заказа (например, "в обработке", "выполнен")
+  totalAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false }, // Общая сумма заказа
+});
+
+const OrderProduct = sequelize.define('orderProduct', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  quantity: { type: DataTypes.INTEGER, allowNull: false },
+  orderId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор заказа, к которому относится товар
+  productId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор продукта, который находится в заказе
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false }, // Цена товара на момент заказа
+});
 
 
 User.hasOne(Basket)
@@ -54,8 +68,16 @@ Products.belongsTo(Type)
 Products.hasMany(BasketProducts)
 BasketProducts.belongsTo(Products)
 
-Products.hasMany(ProductsInfo,{as:'info'})
-ProductsInfo.belongsTo(Products)
+Products.hasMany(ProductsInfo, { as: 'info' });
+ProductsInfo.belongsTo(Products);
+
+User.hasMany(Order);
+Order.belongsTo(User);
+
+
+Order.hasMany(OrderProduct);
+OrderProduct.belongsTo(Order);
+
 
 module.exports={
    User, 
@@ -63,5 +85,7 @@ module.exports={
    BasketProducts,
    Products,
    Type,
-   ProductsInfo
+   ProductsInfo,
+   Order,
+   OrderProduct
 }
