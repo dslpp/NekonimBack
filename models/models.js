@@ -6,7 +6,16 @@ const User = sequelize.define('user', {
   email: { type: DataTypes.STRING, unique: true },
   password: { type: DataTypes.STRING },
   role: { type: DataTypes.STRING, defaultValue: "USER" },
+  name: { type: DataTypes.STRING, allowNull: false },
+  surname: { type: DataTypes.STRING, allowNull: false },
+  sex: { type: DataTypes.STRING,defaultValue: "Не задан" },
+  phoneNumber: { 
+    type: DataTypes.STRING, 
+    allowNull: false, 
+  
+  }
 });
+
 
 const Basket = sequelize.define('basket', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
