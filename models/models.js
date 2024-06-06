@@ -8,14 +8,12 @@ const User = sequelize.define('user', {
   role: { type: DataTypes.STRING, defaultValue: "USER" },
   name: { type: DataTypes.STRING, allowNull: false },
   surname: { type: DataTypes.STRING, allowNull: false },
-  sex: { type: DataTypes.STRING,defaultValue: "Не задан" },
-  phoneNumber: { 
-    type: DataTypes.STRING, 
-    allowNull: false, 
-  
-  }
+  sex: { type: DataTypes.STRING, defaultValue: "Не задан" },
+  phoneNumber: { type: DataTypes.STRING, allowNull: false },
+  isActivated: { type: DataTypes.BOOLEAN, defaultValue: false },
+  resetPasswordToken: { type: DataTypes.STRING },
+  resetPasswordExpires: { type: DataTypes.DATE }
 });
-
 
 const Basket = sequelize.define('basket', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -23,20 +21,16 @@ const Basket = sequelize.define('basket', {
 
 const BasketProducts = sequelize.define('basketproducts', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  quantity: { type: DataTypes.INTEGER }, 
+  quantity: { type: DataTypes.INTEGER },
 });
 
 const Products = sequelize.define('products', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, unique: true, allowNull: false },
   shortdescription: { type: DataTypes.TEXT },
-  price: { 
-    type: DataTypes.DECIMAL(10, 2), 
-    allowNull: false 
-  },
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   img: { type: DataTypes.STRING, allowNull: false },
 });
-
 
 const Type = sequelize.define('type', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -51,44 +45,42 @@ const ProductsInfo = sequelize.define('products_info', {
 
 const Order = sequelize.define('order', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  userId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор пользователя, сделавшего заказ
-  status: { type: DataTypes.STRING, allowNull: false }, // Статус заказа (например, "в обработке", "выполнен")
-  totalAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false }, // Общая сумма заказа
+  userId: { type: DataTypes.INTEGER, allowNull: false },
+  status: { type: DataTypes.STRING, allowNull: false },
+  totalAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
 });
 
 const OrderProduct = sequelize.define('orderProduct', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   quantity: { type: DataTypes.INTEGER, allowNull: false },
-  orderId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор заказа, к которому относится товар
-  productId: { type: DataTypes.INTEGER, allowNull: false }, // Идентификатор продукта, который находится в заказе
-  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false }, // Цена товара на момент заказа
+  orderId: { type: DataTypes.INTEGER, allowNull: false },
+  productId: { type: DataTypes.INTEGER, allowNull: false },
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
 });
 
+// Установка связей с каскадным удалением
+User.hasOne(Basket, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Basket.belongsTo(User);
 
-User.hasOne(Basket)
-Basket.belongsTo(User)
+Basket.hasMany(BasketProducts, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+BasketProducts.belongsTo(Basket);
 
-Basket.hasMany(BasketProducts)
-BasketProducts.belongsTo(Basket)
+Type.hasMany(Products, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Products.belongsTo(Type);
 
-Type.hasMany(Products)
-Products.belongsTo(Type)
+Products.hasMany(BasketProducts, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+BasketProducts.belongsTo(Products);
 
-Products.hasMany(BasketProducts)
-BasketProducts.belongsTo(Products)
-
-Products.hasMany(ProductsInfo, { as: 'info' });
+Products.hasMany(ProductsInfo, { as: 'info', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 ProductsInfo.belongsTo(Products);
 
-User.hasMany(Order);
+User.hasMany(Order, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Order.belongsTo(User);
 
-
-Order.hasMany(OrderProduct);
+Order.hasMany(OrderProduct, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 OrderProduct.belongsTo(Order);
 
-
-module.exports={
+module.exports = {
    User, 
    Basket,
    BasketProducts,
@@ -97,4 +89,4 @@ module.exports={
    ProductsInfo,
    Order,
    OrderProduct
-}
+};

@@ -6,12 +6,14 @@ class BasketController {
         try {
             const user = req.user;
             const { productId } = req.body;
-    
-  
+
+            console.log('User:', user);
+            console.log('ProductId:', productId);
+
             const existingProduct = await BasketProducts.findOne({
                 where: { basketId: user.id, productId: productId }
             });
-    
+
             if (existingProduct) {
                 existingProduct.quantity += 1;
                 await existingProduct.save();
@@ -21,6 +23,7 @@ class BasketController {
                 return res.json(basketProduct);
             }
         } catch (error) {
+            console.error('Error adding to basket:', error);
             next(error);
         }
     }
