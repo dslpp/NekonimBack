@@ -2,12 +2,14 @@ require("dotenv").config();
 const express = require('express');
 const sequelize = require('./db');
 const models = require('./models/models');
+const PORT = process.env.PORT || 3000;
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const router = require('./routes/index');
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 const checkAccountActivation = require('./accountActivationChecker');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Используйте секретный ключ из env
+const stripe = require('stripe')("sk_test_51PPl8TP3X3j0YeqkmYGa8D87H5sQHGMhWZQNwbXgOpqvSfyDSutfwdfqLopvkywqbu9XxsxcziqLW6YbjUYFE8NY00HaUNvT00"); // Импорт Stripe и использование секретного ключа
+
 const path = require('path');
 
 const app = express();
@@ -18,11 +20,6 @@ app.use(fileUpload({}));
 app.use('/api', router);
 
 app.use(errorHandler);
-
-// Добавьте этот маршрут для перенаправления корневого URL на /main
-app.get('/', (req, res) => {
-  res.redirect('/main');
-});
 
 // Маршрут для создания платежного намерения с использованием Stripe
 app.post('/create-payment-intent', async (req, res) => {
@@ -43,21 +40,19 @@ app.post('/create-payment-intent', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-
 const start = async () => {
-  try {
-    await sequelize.authenticate();
-    await sequelize.sync();
-    app.listen(PORT, () => {
-      console.log(`Сервер запущен на порту ${PORT}`);
-
-      // Запуск функции проверки активации через 3 дня
-      setTimeout(checkAccountActivation, 3 * 24 * 60 * 60 * 1000);
-    });
-  } catch (e) {
-    console.log(e);
-  }
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+        app.listen(PORT, () => {
+            console.log(`Сервер запущен на порту ${PORT}`);
+            
+            // Запуск функции проверки активации через 3 дня
+            setTimeout(checkAccountActivation, 3 * 24 * 60 * 60 * 1000);
+        });
+    } catch (e) {
+        console.log(e);
+    }
 };
 
 start();
