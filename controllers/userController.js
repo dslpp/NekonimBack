@@ -62,7 +62,7 @@ class UserController {
       user.resetPasswordExpires = resetTokenExpiry;
       await user.save();
 
-      const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+      const resetLink = `http://213.139.209.87:3000/reset-password/${resetToken}`;
 
       const mailOptions = {
         from: '"Nekonim Support" <nekonim@mail.ru>',
@@ -134,7 +134,7 @@ class UserController {
         isActivated: false,
       });
   
-      const activationLink = `http://localhost:5000/api/user/activate/${user.id}`;
+      const activationLink = `http://213.139.209.87:5000/api/user/activate/${user.id}`;
       sendActivationMail(email, activationLink);
       await Basket.create({ userId: user.id });
       const token = generateJwt(user.id, user.email, user.role);
@@ -154,7 +154,7 @@ class UserController {
       }
       user.isActivated = true;
       await user.save();
-      return res.redirect(`http://localhost:3000`);
+      return res.redirect(`http://213.139.209.87:3000`);
     } catch (e) {
       return next(ApiError.internal("Произошла ошибка при активации аккаунта"));
     }
@@ -170,7 +170,7 @@ class UserController {
       }
 
       if (!user.isActivated) {
-        const activationLink = `http://localhost:5000/api/user/activate/${user.id}`;
+        const activationLink = `http://213.139.209.87:5000/api/user/activate/${user.id}`;
         sendActivationMail(user.email, activationLink);
         return next(ApiError.internal("Аккаунт не активирован. Ссылка для активации отправлена на вашу почту."));
       }
