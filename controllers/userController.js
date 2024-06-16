@@ -5,19 +5,20 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
 const uuid = require('uuid');
 const { Op } = require('sequelize');
+require('dotenv').config(); // Для загрузки переменных окружения из .env файла
 
 // Функция генерации JWT
-const generateJwt = (id, email, role,isActivated) => {
-  return jwt.sign({ id, email, role,isActivated }, process.env.SECRET_KEY, { expiresIn: "12h" });
+const generateJwt = (id, email, role, isActivated) => {
+  return jwt.sign({ id, email, role, isActivated }, process.env.SECRET_KEY, { expiresIn: "12h" });
 };
 
 // Настройка транспортера для отправки писем
 const transporter = nodemailer.createTransport({
   service: "mail.ru",
-    auth: {
-      user: "nekonim@mail.ru", // Ваш адрес электронной почты на Mail.ru
-      pass: "GfvXaMptUd1xbey6peEG", // Пароль от вашей учетной записи на Mail.ru
-    },
+  auth: {
+    user: "nekonim@mail.ru", // Ваш адрес электронной почты на Mail.ru
+    pass: "GfvXaMptUd1xbey6peEG", // Пароль от вашей учетной записи на Mail.ru
+  },
 });
 
 // Функция отправки письма для активации аккаунта
@@ -62,7 +63,7 @@ class UserController {
       user.resetPasswordExpires = resetTokenExpiry;
       await user.save();
 
-      const resetLink = `http://213.139.209.87:3000/reset-password/${resetToken}`;
+      const resetLink = `${process.env.API_URL_FRONT}/reset-password/${resetToken}`;
 
       const mailOptions = {
         from: '"Nekonim Support" <nekonim@mail.ru>',
@@ -134,10 +135,10 @@ class UserController {
         isActivated: false,
       });
   
-      const activationLink = `http://213.139.209.87:5000/api/user/activate/${user.id}`;
+      const activationLink = `${process.env.API_URL}/api/user/activate/${user.id}`;
       sendActivationMail(email, activationLink);
       await Basket.create({ userId: user.id });
-      const token = generateJwt(user.id, user.email, user.role);
+      const token = generateJwt(user.id, user.email, user.role, user.isActivated);
       return res.json({ token, message: 'Пользователь зарегистрирован. Для активации проверьте почту.' });
     } catch (e) {
       console.error("Ошибка при регистрации: ", e);
@@ -154,7 +155,7 @@ class UserController {
       }
       user.isActivated = true;
       await user.save();
-      return res.redirect(`http://213.139.209.87:3000`);
+      return res.redirect(`${process.env.API_URL_FRONT}`);
     } catch (e) {
       return next(ApiError.internal("Произошла ошибка при активации аккаунта"));
     }
@@ -170,7 +171,7 @@ class UserController {
       }
 
       if (!user.isActivated) {
-        const activationLink = `http://213.139.209.87:5000/api/user/activate/${user.id}`;
+        const activationLink = `${process.env.API_URL}/api/user/activate/${user.id}`;
         sendActivationMail(user.email, activationLink);
         return next(ApiError.internal("Аккаунт не активирован. Ссылка для активации отправлена на вашу почту."));
       }
@@ -259,7 +260,6 @@ class UserController {
       return next(ApiError.internal("Произошла ошибка при обновлении пароля"));
     }
   }
-
 }
 
 module.exports = new UserController();
