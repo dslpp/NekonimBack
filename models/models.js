@@ -57,6 +57,14 @@ const OrderProduct = sequelize.define('orderProduct', {
   productId: { type: DataTypes.INTEGER, allowNull: false },
   price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
 });
+const Review = sequelize.define('review', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: DataTypes.INTEGER, allowNull: false },
+  productId: { type: DataTypes.INTEGER, allowNull: false },
+  rating: { type: DataTypes.INTEGER, allowNull: false },
+  comment: { type: DataTypes.TEXT, allowNull: false },
+  reviewDate: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+});
 
 // Установка связей с каскадным удалением
 User.hasOne(Basket, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
@@ -80,6 +88,12 @@ Order.belongsTo(User);
 Order.hasMany(OrderProduct, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 OrderProduct.belongsTo(Order);
 
+User.hasMany(Review, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Review.belongsTo(User);
+
+Products.hasMany(Review, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Review.belongsTo(Products);
+
 module.exports = {
    User, 
    Basket,
@@ -88,5 +102,6 @@ module.exports = {
    Type,
    ProductsInfo,
    Order,
-   OrderProduct
+   OrderProduct,
+   Review
 };
