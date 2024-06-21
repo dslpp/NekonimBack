@@ -8,7 +8,7 @@ const fileUpload = require('express-fileupload');
 const router = require('./routes/index');
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 const checkAccountActivation = require('./accountActivationChecker');
-const stripe = require('stripe')("sk_test_51PPl8TP3X3j0Yeqk412TVOUCM9WBqJmVKPewhpaJyIotno3SD9UmNKdrUWT0AGsh96pnG376efsmaIQpsjP5KotH008MZ4MrwT"); // Импорт Stripe и использование секретного ключа
+const stripe = require('stripe')("sk_test_51PPl8TP3X3j0Yeqk412TVOUCM9WBqJmVKPewhpaJyIotno3SD9UmNKdrUWT0AGsh96pnG376efsmaIQpsjP5KotH008MZ4MrwT");  
 
 const path = require('path');
 

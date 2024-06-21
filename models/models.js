@@ -66,7 +66,6 @@ const Review = sequelize.define('review', {
   reviewDate: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
 });
 
-// Установка связей с каскадным удалением
 User.hasOne(Basket, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Basket.belongsTo(User);
 
@@ -94,6 +93,8 @@ Review.belongsTo(User);
 Products.hasMany(Review, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Review.belongsTo(Products);
 
+OrderProduct.belongsTo(Products, { as: 'products', foreignKey: 'productId' });
+Products.hasMany(OrderProduct, { as: 'orderProducts', foreignKey: 'productId' }); 
 module.exports = {
    User, 
    Basket,
