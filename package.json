@@ -17,6 +17,7 @@
     "express-fileupload": "^1.4.3",
     "file-type": "^19.0.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",

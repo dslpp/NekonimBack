@@ -1,3 +1,5 @@
+// В контроллере ReviewController.js
+
 const { Review, User } = require('../models/models');
 const ApiError = require('../error/ApiError');
 
@@ -27,6 +29,27 @@ class ReviewController {
       return res.json(reviews);
     } catch (e) {
       next(ApiError.badRequest(e.message));
+    }
+  }
+
+  async deleteReview(req, res, next) {
+    try {
+      const { id } = req.params;
+      const review = await Review.findByPk(id);
+
+      if (!review) {
+        return next(ApiError.notFound(`Review with id ${id} not found`));
+      }
+
+      // Проверка, является ли пользователь администратором
+      if (req.user.role !== 'ADMIN') {
+        return next(ApiError.forbidden('Only admins can delete reviews'));
+      }
+
+      await review.destroy();
+      return res.json({ message: 'Review deleted successfully' });
+    } catch (e) {
+      next(ApiError.internal(e.message));
     }
   }
 }
