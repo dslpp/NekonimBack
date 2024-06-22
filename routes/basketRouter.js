@@ -7,6 +7,6 @@ router.get('/', authMiddleware, basketController.getBasketUser)
 router.post('/', authMiddleware, basketController.addToBasket)
 router.put('/increment/:id', authMiddleware, basketController.incrementQuantity)
 router.put('/decrement/:id', authMiddleware, basketController.decrementQuantity)
-router.delete('/:id', authMiddleware, basketController.deleteFromBasket)
+router.delete('/:productId', authMiddleware, basketController.deleteFromBasket);
 
 module.exports = router

@@ -18,6 +18,7 @@ const { Order, OrderProduct, Products } = require("../models/models");
                     productId: product.productId,
                     quantity: product.quantity,
                     price: product.price,
+                    name:product.name
                   });
                 }
             
@@ -46,5 +47,42 @@ const { Order, OrderProduct, Products } = require("../models/models");
             res.status(500).json({ error: 'Ошибка сервера при получении заказов' });
           }
         }
+        async getAllOrders(req, res) {
+          try {
+              const orders = await Order.findAll({
+                  include: [
+                      {
+                          model: OrderProduct,
+                          as: 'orderProducts',
+                          include: [{ model: Products, as: 'products' }]
+                      }
+                  ]
+              });
+              res.status(200).json(orders);
+          } catch (error) {
+              console.error('Ошибка при получении заказов:', error);
+              res.status(500).json({ error: 'Ошибка сервера при получении заказов' });
+          }
+      }
+        updateOrderStatus = async (req, res) => {
+          const orderId = req.params.orderId;
+          const { status } = req.body;
+        
+          try {
+            const order = await Order.findByPk(orderId);
+        
+            if (!order) {
+              return res.status(404).json({ error: 'Заказ не найден' });
+            }
+        
+            order.status = status; // обновляем статус заказа
+            await order.save();
+        
+            res.status(200).json(order);
+          } catch (error) {
+            console.error('Ошибка при обновлении статуса заказа:', error);
+            res.status(500).json({ error: 'Ошибка сервера при обновлении статуса заказа' });
+          }
+        };
     }
     module.exports = new OrdersController()

@@ -56,6 +56,7 @@ const OrderProduct = sequelize.define('orderProduct', {
   orderId: { type: DataTypes.INTEGER, allowNull: false },
   productId: { type: DataTypes.INTEGER, allowNull: false },
   price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  name:{type: DataTypes.STRING, allowNull: false}
 });
 const Review = sequelize.define('review', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
