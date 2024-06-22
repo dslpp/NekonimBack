@@ -51,23 +51,14 @@ class BasketController {
     }
     async deleteFromBasket(req, res, next) {
         try {
-            const { productId } = req.params;
-            const userId = req.user.id; // Предполагая, что ID пользователя доступен через req.user.id
-    
-            const deleted = await BasketProducts.destroy({ 
-                where: { 
-                    basketId: userId, 
-                    productId: productId 
-                } 
-            });
-    
+            const { id } = req.params;
+            const deleted = await BasketProducts.destroy({ where: { id } }); 
             if (deleted) {
                 return res.status(204).json({ message: "Товар успешно удален из корзины" });
             } else {
                 return res.status(404).json({ message: "Товар не найден в корзине" });
             }
         } catch (error) {
-            console.error('Ошибка при удалении товара из корзины:', error); // Логируем ошибку для отладки
             next(error);
         }
     }
